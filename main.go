@@ -45,14 +45,14 @@ func server() {
 }
 
 func client() {
-	guru_ip := "192.168.86.236"
+	guru_ip := os.Getenv("MY_IP")
 	addr, err := net.ResolveTCPAddr("tcp", guru_ip+":"+ServerPort)
 	if err != nil {
 		log.Fatalf("couldn't resolve server IP: %s", addr)
 	}
 	conn, err := net.DialTCP("tcp", nil, addr)
 	if err != nil {
-		log.Fatalf("couldn't connect to server")
+		log.Fatalf("couldn't connect to server: %s", err)
 	}
 	defer conn.Close()
 
@@ -62,7 +62,7 @@ func client() {
 	}
 	fmt.Printf("%v bytes written\n", n)
 
-	// go handleConnection(conn)
+	go handleConnection(conn)
 }
 
 // # client.py
