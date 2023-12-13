@@ -65,33 +65,6 @@ func client() {
 	go handleConnection(conn)
 }
 
-// # client.py
-// import socket
-
-// # Server's IP address and port number
-// SERVER_IP = 'SERVER_IP'  # Replace with the actual IP address of the server
-// SERVER_PORT = 12345
-
-// # Create a IPV4, TCP socket
-// client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-// # Connect to the server
-// client_socket.connect((SERVER_IP, SERVER_PORT))
-// print('Connected to the server...')
-
-// while True:
-//     # Send a message to the server
-//     message = input("You: ")
-//     if message.lower() == 'exit':
-//         break
-//     client_socket.sendall(message.encode())
-
-//     # Receive the reply from the server
-//     reply = client_socket.recv(1024).decode()
-//     print(f"Server: {reply}")
-
-// # Close the connection
-// client_socket.close()
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
@@ -101,7 +74,7 @@ func handleConnection(conn net.Conn) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		message, err := reader.ReadString('\n') // Assuming messages are line-delimited
+		message, err := reader.ReadString('\n')
 		if err == io.EOF {
 			fmt.Printf("Client at %s has disconnected.\n", conn.RemoteAddr().String())
 			break
@@ -111,13 +84,11 @@ func handleConnection(conn net.Conn) {
 			break
 		}
 
-		// Trim the newline character and print the message
 		message = message[:len(message)-1]
 		fmt.Printf("Client: %s\n", message)
 
-		// Send a reply
 		fmt.Print("You: ")
-		scanner.Scan() // Reads the next line from stdin (blocking)
+		scanner.Scan()
 		reply := scanner.Text() + "\n"
 
 		if _, err := writer.WriteString(reply); err != nil {
