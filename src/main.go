@@ -1,10 +1,14 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net"
 	"os"
+	"time"
+
+	"github.com/benmuth/time-tracker/src/timer"
 )
 
 const (
@@ -39,14 +43,22 @@ func server() {
 	defer conn.Close()
 	fmt.Println("connected!")
 
-	b := make([]byte, 100)
+	// b := make([]byte, 100)
 
-	n, err := conn.Read(b)
-	if err != nil {
-		fmt.Printf("failed to read from connection\n")
+	var entry timer.TimeEntry
+	// var timeStart time.Time
+	dec := gob.NewDecoder(conn)
+	if err := dec.Decode(&entry); err != nil {
+		log.Fatalf("couldn't read entry from connection: %s", err)
 	}
-	fmt.Printf("%d bytes read\n", n)
-	fmt.Printf("message: %s\n", b)
+	fmt.Println(entry)
+
+	// n, err := conn.Read(b)
+	// if err != nil {
+	// 	fmt.Printf("failed to read from connection\n")
+	// }
+	// fmt.Printf("%d bytes read\n", n)
+	// fmt.Printf("message: %s\n", b)
 }
 
 func client() {
@@ -63,9 +75,18 @@ func client() {
 	}
 	defer conn.Close()
 
-	n, err := conn.Write([]byte("hello!"))
-	if err != nil {
-		log.Fatalf("couldn't write to connection")
+	entry := timer.TimeEntry{Category: "code", Start: time.Now(), End: time.Now(), Ended: true}
+
+	// entryVal := reflect.ValueOf(&entry)
+	// fmt.Printf("can set entry: %v\n", entryVal.Elem().CanSet())
+
+	enc := gob.NewEncoder(conn)
+	if err := enc.Encode(&entry); err != nil {
+		log.Fatalf("couldn't encode entry: %s", err)
 	}
-	fmt.Printf("%v bytes written\n", n)
+	// n, err := conn.Write([]byte("hello!"))
+	// if err != nil {
+	// 	log.Fatalf("couldn't write to connection")
+	// }
+	// fmt.Printf("%v bytes written\n", n)
 }
