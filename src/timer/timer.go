@@ -9,6 +9,7 @@ type TimeEntry struct {
 	Category   string
 	Start, End time.Time
 	Ended      bool
+	ErrMessage string
 }
 
 // func Start() {

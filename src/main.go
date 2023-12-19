@@ -37,6 +37,7 @@ func server() {
 	if err != nil {
 		log.Fatalf("failed to receive entry: %s", err)
 	}
+	fmt.Println(entry)
 }
 
 func client() {
@@ -44,10 +45,11 @@ func client() {
 	if err != nil {
 		log.Fatalf("failed to initialize client %s", err)
 	}
+	defer client.Conn.Close()
 
 	entry := timer.TimeEntry{Category: "code", Start: time.Now(), End: time.Now(), Ended: true, Id: rand.Uint64()}
 
-	if err := client.Send(entry); err != nil {
+	if err := client.SendTimeEntry(entry); err != nil {
 		log.Fatalf("couldn't send entry: %s", err)
 	}
 }
