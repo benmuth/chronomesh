@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/gob"
 	"fmt"
 	"log"
 	"math/rand"
-	"net"
 	"os"
 	"time"
 
@@ -28,39 +26,17 @@ func main() {
 }
 
 func server() {
-	listener, err := net.Listen("tcp", ":"+ServerPort)
+	server, err := network.NewServer(2, "", ServerPort)
 	if err != nil {
-		log.Fatalf("Error occurred: %s", err.Error())
+		log.Fatalf("failed to listen for connections")
 	}
-	defer listener.Close()
-
-	fmt.Printf("Server is listening for connections on port %s...\n", ServerPort)
-
-	fmt.Printf("waiting and listening!\n")
-	conn, err := listener.Accept()
-	if err != nil {
-		fmt.Printf("Error accepting connection: %s\n", err.Error())
-		return
-	}
-	defer conn.Close()
-	fmt.Println("connected!")
-
-	// b := make([]byte, 100)
+	defer server.Listener.Close()
 
 	var entry timer.TimeEntry
-	// var timeStart time.Time
-	dec := gob.NewDecoder(conn)
-	if err := dec.Decode(&entry); err != nil {
-		log.Fatalf("couldn't read entry from connection: %s", err)
+	entry, err = server.ReceiveTimeEntry(entry)
+	if err != nil {
+		log.Fatalf("failed to receive entry: %s", err)
 	}
-	fmt.Println(entry)
-
-	// n, err := conn.Read(b)
-	// if err != nil {
-	// 	fmt.Printf("failed to read from connection\n")
-	// }
-	// fmt.Printf("%d bytes read\n", n)
-	// fmt.Printf("message: %s\n", b)
 }
 
 func client() {
