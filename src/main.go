@@ -4,10 +4,12 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"os"
 	"time"
 
+	"github.com/benmuth/time-tracker/src/network"
 	"github.com/benmuth/time-tracker/src/timer"
 )
 
@@ -62,31 +64,14 @@ func server() {
 }
 
 func client() {
-	// target_ip := os.Getenv("MY_IP")
-	target_ip := "127.0.0.1"
-	fmt.Println("IP: ", target_ip)
-	addr, err := net.ResolveTCPAddr("tcp", target_ip+":"+ServerPort)
+	client, err := network.NewClient(1, network.Localhost, ServerPort)
 	if err != nil {
-		log.Fatalf("couldn't resolve server IP: %s", addr)
+		log.Fatalf("failed to initialize client %s", err)
 	}
-	conn, err := net.DialTCP("tcp", nil, addr)
-	if err != nil {
-		log.Fatalf("couldn't connect to server: %s", err)
+
+	entry := timer.TimeEntry{Category: "code", Start: time.Now(), End: time.Now(), Ended: true, Id: rand.Uint64()}
+
+	if err := client.Send(entry); err != nil {
+		log.Fatalf("couldn't send entry: %s", err)
 	}
-	defer conn.Close()
-
-	entry := timer.TimeEntry{Category: "code", Start: time.Now(), End: time.Now(), Ended: true}
-
-	// entryVal := reflect.ValueOf(&entry)
-	// fmt.Printf("can set entry: %v\n", entryVal.Elem().CanSet())
-
-	enc := gob.NewEncoder(conn)
-	if err := enc.Encode(&entry); err != nil {
-		log.Fatalf("couldn't encode entry: %s", err)
-	}
-	// n, err := conn.Write([]byte("hello!"))
-	// if err != nil {
-	// 	log.Fatalf("couldn't write to connection")
-	// }
-	// fmt.Printf("%v bytes written\n", n)
 }
