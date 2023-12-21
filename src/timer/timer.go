@@ -12,7 +12,8 @@ type TimeEntry struct {
 	ErrMessage string
 }
 
-// func Start() {
-// 	start := time.Now()
-// 	print(start)
-// }
+type TimeEntries []TimeEntry
+
+func (te TimeEntries) Merge(te2 TimeEntries) TimeEntries {
+	return append(te, te2...)
+}
