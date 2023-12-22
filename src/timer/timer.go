@@ -1,6 +1,7 @@
 package timer
 
 import (
+	"math/rand"
 	"time"
 )
 
@@ -10,6 +11,17 @@ type TimeEntry struct {
 	Start, End time.Time
 	Ended      bool
 	ErrMessage string
+}
+
+func NewTimeEntry(start, end time.Time) TimeEntry {
+	return TimeEntry{
+		Id:         rand.Uint64(),
+		Category:   "",
+		Start:      start,
+		End:        end,
+		Ended:      false,
+		ErrMessage: "",
+	}
 }
 
 type TimeEntries []TimeEntry

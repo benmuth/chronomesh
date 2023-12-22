@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestMergeSymmetry(t *testing.T) {
+func TestMergeProperties(t *testing.T) {
 	tests := []struct {
 		name          string
 		localEntries  TimeEntries
@@ -16,7 +16,7 @@ func TestMergeSymmetry(t *testing.T) {
 		wantLength    int
 	}{
 		{
-			name:          "Bidirectional symmetry",
+			name:          "Commutativity",
 			localEntries:  generateEntries(2),
 			remoteEntries: generateEntries(2),
 		},
