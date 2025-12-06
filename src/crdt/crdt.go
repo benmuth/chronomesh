@@ -36,6 +36,7 @@ func newEntrySet(n int, timeOffset int) EntrySet {
 	return es
 }
 
+// TODO: make this merge idempotent, associative, and commutative
 func (lww *LWWElementSet) Merge(lwwRemote LWWElementSet) LWWElementSet {
 	newLWWSet := LWWElementSet{Bias: Add, AddSet: make(EntrySet), RemoveSet: make(EntrySet)}
 	for k := range lww.AddSet {
